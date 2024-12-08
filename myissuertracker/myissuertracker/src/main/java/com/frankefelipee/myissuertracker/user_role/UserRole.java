@@ -1,4 +1,4 @@
-package com.frankefelipee.myissuertracker.user;
+package com.frankefelipee.myissuertracker.user_role;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -21,9 +21,9 @@ public class UserRole {
         BASIC(1L),
         ADMIN(2L);
 
-        final long roleId;
+        final Long roleId;
 
-        Values(long roleId) {
+        Values(Long roleId) {
 
             this.roleId = roleId;
 

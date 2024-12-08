@@ -1,9 +1,9 @@
-package com.frankefelipee.myissuertracker.issue;
+package com.frankefelipee.myissuertracker.user_role;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IssueRepository extends JpaRepository<Issue, String> {
+public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
 }

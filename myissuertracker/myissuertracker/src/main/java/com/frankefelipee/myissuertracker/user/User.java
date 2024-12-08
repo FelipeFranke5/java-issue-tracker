@@ -1,6 +1,7 @@
 package com.frankefelipee.myissuertracker.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.frankefelipee.myissuertracker.user_role.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
