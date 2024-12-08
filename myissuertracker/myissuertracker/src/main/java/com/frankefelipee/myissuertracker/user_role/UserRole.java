@@ -17,17 +17,12 @@ import lombok.Setter;
 public class UserRole {
 
     @Getter
+    @AllArgsConstructor
     public enum Values {
         BASIC(1L),
         ADMIN(2L);
 
         final Long roleId;
-
-        Values(Long roleId) {
-
-            this.roleId = roleId;
-
-        }
 
     }
 
