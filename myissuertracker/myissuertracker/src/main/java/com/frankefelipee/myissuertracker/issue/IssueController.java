@@ -2,69 +2,35 @@ package com.frankefelipee.myissuertracker.issue;
 
 import jakarta.validation.Valid;
 
-import java.util.HashMap;
-
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.mediatype.problem.Problem;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/issues")
 public class IssueController {
 
+    @Autowired
     private final IssueService issueService;
 
-    @Value("${openai.api.key}")
-    private String openAIKey;
-
-    public IssueController(IssueService issueService) {
-
-        this.issueService = issueService;
-
-    }
-
-    private ResponseEntity<?> get404Message(String id) {
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                .body(Problem.create()
-                        .withTitle("Not Found")
-                        .withDetail("Could not find an ISSUE with given id.")
-                );
-
-    }
-
-    private ResponseEntity<?> get405Message() {
-
-        return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                .body(Problem.create()
-                        .withTitle("Method Not Allowed")
-                        .withDetail("This method is not allowed.")
-                );
-
-    }
-
     @GetMapping("/all")
-    public ResponseEntity<HashMap<String, Object>> allIssues() {
+    public ResponseEntity<IssueResponse> allIssues() {
 
-        long issuesCount = issueService.getIssuesCount();
         CollectionModel<EntityModel<Issue>> allIssues = issueService.getAllIssues();
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("issuesCount", issuesCount);
-        data.put("issues", allIssues);
+        IssueResponse issueResponse = new IssueResponse(
+                false,
+                "successfull",
+                "Query Successfull",
+                null,
+                allIssues
+        );
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(data);
+        return ResponseEntity.ok(issueResponse);
 
     }
 
@@ -73,11 +39,16 @@ public class IssueController {
 
         try {
             EntityModel<Issue> issue = issueService.getOneIssue(id);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(issue);
+            IssueResponse issueResponse = new IssueResponse(
+                    false,
+                    "successful",
+                    "Query Successfull",
+                    issue,
+                    null
+            );
+            return ResponseEntity.ok(issueResponse);
         } catch (IssueNotFoundException issueNotFoundException) {
-            return this.get404Message(id);
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -93,9 +64,10 @@ public class IssueController {
                 true,
                 "sucessful",
                 "created",
-                issueService.generateNewIssue(issue));
+                issueService.generateNewIssue(issue),
+                null);
 
-        return ResponseEntity.ok(issueResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(issueResponse);
 
     }
 
@@ -106,18 +78,28 @@ public class IssueController {
             EntityModel<Issue> issue = issueService.markIssueAsDone(id);
 
             if (issue != null) {
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(issue);
+                IssueResponse issueResponse = new IssueResponse(
+                        false,
+                        "Successful",
+                        "Marked as Done",
+                        issue,
+                        null
+                );
+
+                return ResponseEntity.ok(issueResponse);
             }
-            return ResponseEntity
-                    .status(HttpStatus.METHOD_NOT_ALLOWED)
-                    .body(Problem.create()
-                            .withTitle("Issue Already Done")
-                            .withDetail("This Issue is already marked as done")
-                    );
+
+            IssueResponse issueResponse = new IssueResponse(
+                    false,
+                    "Failed",
+                    "The Issue you are trying to mark as done is already done.",
+                    null,
+                    null
+            );
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(issueResponse);
         } catch (IssueNotFoundException issueNotFoundException) {
-            return this.get404Message(id);
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -127,11 +109,17 @@ public class IssueController {
 
         try {
             EntityModel<Issue> modifiedIssue = issueService.modifyIssue(issue, id);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(modifiedIssue);
+            IssueResponse issueResponse = new IssueResponse(
+                    false,
+                    "Successful",
+                    "Modified Successfully",
+                    modifiedIssue,
+                    null
+            );
+
+            return ResponseEntity.ok(issueResponse);
         } catch (IssueNotFoundException issueNotFoundException) {
-            return this.get404Message(id);
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -141,9 +129,9 @@ public class IssueController {
 
         try {
             issueService.deleteIssueById(id);
-            return this.get405Message();
+            return ResponseEntity.noContent().build();
         } catch (IssueNotFoundException issueNotFoundException) {
-            return this.get404Message(id);
+            return ResponseEntity.notFound().build();
         }
 
     }
