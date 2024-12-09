@@ -1,2 +1,0 @@
-INSERT IGNORE INTO user_roles VALUES (1, 'BASIC');
-INSERT IGNORE INTO user_roles VALUES (2, 'ADMIN');
