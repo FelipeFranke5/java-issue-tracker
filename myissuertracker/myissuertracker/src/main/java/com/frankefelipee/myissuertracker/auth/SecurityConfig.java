@@ -28,15 +28,15 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private Key key;
-    private RSAPublicKey rsaPublicKey;
-    private RSAPrivateKey rsaPrivateKey;
+    private final RSAPublicKey rsaPublicKey;
+    private final RSAPrivateKey rsaPrivateKey;
 
     public SecurityConfig() {
 
-        this.key = this.setKey();
-        this.rsaPublicKey = this.key.getRsaPublicKey();
-        this.rsaPrivateKey = this.key.getRsaPrivateKey();
+        Key key = this.setKey();
+        assert key != null;
+        this.rsaPublicKey = key.getRsaPublicKey();
+        this.rsaPrivateKey = key.getRsaPrivateKey();
 
     }
 
@@ -45,7 +45,6 @@ public class SecurityConfig {
         try {
             return new Key();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             return null;
         }
 
