@@ -15,28 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.frankefelipee.myissuertracker.user.UserRepository;
 
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 @RestController
 @RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
 
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthController(JwtEncoder jwtEncoder, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-
-        this.jwtEncoder = jwtEncoder;
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-
-    }
-
     @PostMapping("/get_token")
-    public ResponseEntity<AuthResponse> getToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> getToken(@Valid @RequestBody AuthRequest authRequest) {
 
         var user = userRepository.findByName(authRequest.name());
 
-        if (user.isEmpty() || !user.get().isLoginOk(authRequest, bCryptPasswordEncoder)) {
+        if ((user.isEmpty()) || (!user.get().isLoginOk(authRequest, bCryptPasswordEncoder))) {
             throw new BadCredentialsException("User or Password is incorrect");
         }
 

@@ -1,11 +1,12 @@
 package com.frankefelipee.myissuertracker.auth;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,17 +28,36 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${jwt.public.key}")
-    private RSAPublicKey publicKey;
+    private Key key;
+    private RSAPublicKey rsaPublicKey;
+    private RSAPrivateKey rsaPrivateKey;
 
-    @Value("${jwt.private.key}")
-    private RSAPrivateKey privateKey;
+    public SecurityConfig() {
+
+        this.key = this.setKey();
+        this.rsaPublicKey = this.key.getRsaPublicKey();
+        this.rsaPrivateKey = this.key.getRsaPrivateKey();
+
+    }
+
+    private Key setKey() {
+
+        try {
+            return new Key();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.authorizeHttpRequests(authorize -> {
-            authorize.anyRequest().authenticated();
+            authorize
+                .requestMatchers(HttpMethod.POST, "/auth/get_token").permitAll()
+                .anyRequest().authenticated();
         })
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -50,7 +70,7 @@ public class SecurityConfig {
     @Bean
     public JwtEncoder jwtEncoder() {
 
-        JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(this.privateKey).build();
+        JWK jwk = new RSAKey.Builder(this.rsaPublicKey).privateKey(this.rsaPrivateKey).build();
         var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
 
@@ -59,7 +79,7 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
 
-        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+        return NimbusJwtDecoder.withPublicKey(this.rsaPublicKey).build();
 
     }
 
