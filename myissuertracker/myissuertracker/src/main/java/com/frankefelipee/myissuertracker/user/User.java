@@ -1,6 +1,7 @@
 package com.frankefelipee.myissuertracker.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.frankefelipee.myissuertracker.auth.AuthRequest;
 import com.frankefelipee.myissuertracker.user_role.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,8 @@ import lombok.Setter;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,6 +23,12 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User {
+
+    public boolean isLoginOk(AuthRequest authRequest, PasswordEncoder passwordEncoder) {
+
+        return passwordEncoder.matches(authRequest.password(), this.password);
+
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

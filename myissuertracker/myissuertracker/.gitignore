@@ -1,5 +1,7 @@
 *.pub
 *.key
+admin_username.txt
+admin_password.txt
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
