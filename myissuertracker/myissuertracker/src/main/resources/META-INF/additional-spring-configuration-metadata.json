@@ -1,9 +1,17 @@
-{
-    "properties": [
-        {
-            "name": "openai.api.key",
-            "type": "java.lang.String",
-            "description": "Key for OPENAI API'"
-        }
-    ]
-}
+{"properties": [
+  {
+    "name": "openai.api.key",
+    "type": "java.lang.String",
+    "description": "Key for OPENAI API'"
+  },
+  {
+    "name": "jwt.private.key",
+    "type": "java.lang.String",
+    "description": "Private Key for JWT Authentication"
+  },
+  {
+    "name": "jwt.public.key",
+    "type": "java.lang.String",
+    "description": "Public Key for JWT Authentication"
+  }
+]}
