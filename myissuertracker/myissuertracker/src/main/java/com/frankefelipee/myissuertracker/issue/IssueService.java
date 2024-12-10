@@ -96,11 +96,15 @@ public class IssueService {
     public Issue getIssueMarkedAsDone(String id) {
 
         Issue issueFound = issueRepository.findById(id).orElseThrow(() -> new IssueNotFoundException(id));
+
         if (!issueFound.isDone()) {
+
             issueFound.setDone(true);
             issueRepository.save(issueFound);
             return issueFound;
+
         }
+
         return null;
 
     }
@@ -110,13 +114,16 @@ public class IssueService {
         Issue finishedIssue = this.getIssueMarkedAsDone(id);
 
         if (finishedIssue != null) {
+
             return EntityModel.of(
                     finishedIssue,
                     linkTo(methodOn(IssueController.class).oneIssue(finishedIssue.getId())).withSelfRel(),
                     linkTo(methodOn(IssueController.class).changeIssue(finishedIssue, finishedIssue.getId())).withRel("modify"),
                     linkTo(methodOn(IssueController.class).deleteIssue(finishedIssue.getId())).withRel("delete"),
                     linkTo(methodOn(IssueController.class).allIssues()).withRel("issues"));
+
         }
+
         return null;
 
     }
