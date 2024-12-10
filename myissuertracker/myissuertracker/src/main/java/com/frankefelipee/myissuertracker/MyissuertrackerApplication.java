@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MyissuertrackerApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(MyissuertrackerApplication.class, args);
+
 	}
 
 }
