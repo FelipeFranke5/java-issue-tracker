@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -22,6 +23,7 @@ public class AuthController {
     private final AuthService authService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Transactional
     @PostMapping("/get_token")
     public ResponseEntity<AuthResponse> getToken(@Valid @RequestBody AuthRequest authRequest) {
 
