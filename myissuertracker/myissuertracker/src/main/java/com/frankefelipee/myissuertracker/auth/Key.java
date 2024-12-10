@@ -31,4 +31,18 @@ public class Key {
 
     }
 
+    public static Key setKey() {
+
+        try {
+
+            return new Key();
+
+        } catch (NoSuchAlgorithmException e) {
+
+            return null;
+
+        }
+
+    }
+
 }

@@ -33,24 +33,10 @@ public class SecurityConfig {
 
     public SecurityConfig() {
 
-        Key key = this.setKey();
+        Key key = Key.setKey();
         assert key != null;
         this.rsaPublicKey = key.getRsaPublicKey();
         this.rsaPrivateKey = key.getRsaPrivateKey();
-
-    }
-
-    private Key setKey() {
-
-        try {
-
-            return new Key();
-
-        } catch (NoSuchAlgorithmException e) {
-
-            return null;
-
-        }
 
     }
 
