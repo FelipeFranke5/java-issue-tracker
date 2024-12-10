@@ -43,9 +43,13 @@ public class SecurityConfig {
     private Key setKey() {
 
         try {
+
             return new Key();
+
         } catch (NoSuchAlgorithmException e) {
+
             return null;
+
         }
 
     }
