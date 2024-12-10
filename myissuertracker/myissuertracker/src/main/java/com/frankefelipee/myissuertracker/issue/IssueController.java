@@ -59,7 +59,7 @@ public class IssueController {
         Issue issue = new Issue();
         issue.setSalesForce(issueRequest.salesForce());
         issue.setDescription(issueRequest.description());
-        issue.setDescription(issueRequest.description());
+        issue.setTicket(issueRequest.ticket());
         IssueResponse issueResponse = new IssueResponse(
                 true,
                 "sucessful",
