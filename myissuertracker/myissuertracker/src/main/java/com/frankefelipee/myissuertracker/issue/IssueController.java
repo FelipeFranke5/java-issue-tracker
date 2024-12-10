@@ -9,6 +9,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @AllArgsConstructor
 @RestController
@@ -35,9 +36,10 @@ public class IssueController {
     }
 
     @GetMapping("/search/{id}")
-    public ResponseEntity<?> oneIssue(@PathVariable String id) {
+    public ResponseEntity<IssueResponse> oneIssue(@PathVariable String id) {
 
         try {
+
             EntityModel<Issue> issue = issueService.getOneIssue(id);
             IssueResponse issueResponse = new IssueResponse(
                     false,
@@ -46,9 +48,13 @@ public class IssueController {
                     issue,
                     null
             );
+
             return ResponseEntity.ok(issueResponse);
+
         } catch (IssueNotFoundException issueNotFoundException) {
-            return ResponseEntity.notFound().build();
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         }
 
     }
@@ -72,12 +78,14 @@ public class IssueController {
     }
 
     @PatchMapping("/mark_done/{id}")
-    ResponseEntity<?> finishIssue(@PathVariable String id) {
+    ResponseEntity<IssueResponse> finishIssue(@PathVariable String id) {
 
         try {
+
             EntityModel<Issue> issue = issueService.markIssueAsDone(id);
 
             if (issue != null) {
+
                 IssueResponse issueResponse = new IssueResponse(
                         false,
                         "Successful",
@@ -87,6 +95,7 @@ public class IssueController {
                 );
 
                 return ResponseEntity.ok(issueResponse);
+
             }
 
             IssueResponse issueResponse = new IssueResponse(
@@ -98,16 +107,20 @@ public class IssueController {
             );
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(issueResponse);
+
         } catch (IssueNotFoundException issueNotFoundException) {
-            return ResponseEntity.notFound().build();
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         }
 
     }
 
     @PutMapping("/modify/{id}")
-    ResponseEntity<?> changeIssue(@Valid @RequestBody Issue issue, @PathVariable String id) {
+    ResponseEntity<IssueResponse> changeIssue(@Valid @RequestBody Issue issue, @PathVariable String id) {
 
         try {
+
             EntityModel<Issue> modifiedIssue = issueService.modifyIssue(issue, id);
             IssueResponse issueResponse = new IssueResponse(
                     false,
@@ -118,8 +131,11 @@ public class IssueController {
             );
 
             return ResponseEntity.ok(issueResponse);
+
         } catch (IssueNotFoundException issueNotFoundException) {
-            return ResponseEntity.notFound().build();
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         }
 
     }
@@ -128,10 +144,14 @@ public class IssueController {
     ResponseEntity<?> deleteIssue(@PathVariable String id) {
 
         try {
+
             issueService.deleteIssueById(id);
             return ResponseEntity.noContent().build();
+
         } catch (IssueNotFoundException issueNotFoundException) {
-            return ResponseEntity.notFound().build();
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         }
 
     }
