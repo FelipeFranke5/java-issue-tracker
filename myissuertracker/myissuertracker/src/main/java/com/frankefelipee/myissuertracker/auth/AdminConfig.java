@@ -29,10 +29,12 @@ public class AdminConfig implements CommandLineRunner {
         var admin = userRepository.findByName(adminUserName);
 
         if (admin.isEmpty()) {
+
             var user = new User();
             user.setName(adminUserName);
             user.setPassword(bCryptPasswordEncoder.encode(adminPassword));
             userRepository.save(user);
+
         }
 
     }
